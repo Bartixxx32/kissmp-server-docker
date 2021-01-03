@@ -1,0 +1,206 @@
+name: buildx
+
+on:
+  pull_request:
+    branches: main
+  push:
+    branches: main
+  repository_dispatch:
+    types: trigger
+
+jobs:
+  buildx-amd64:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v2
+      -
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      -
+        name: Docker Buildx (build)
+        run: |
+          docker buildx build \
+            --cache-from "type=local,src=/tmp/.buildx-cache" \
+            --cache-to "type=local,dest=/tmp/.buildx-cache" \
+            --platform linux/amd64 \
+            --output "type=image,push=false" \
+            --tag bartixxx32/kissmpbase:latest \
+            --file ./Dockerfile .
+      -
+        name: Docker Login
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        run: |
+          echo "${DOCKER_PASSWORD}" | docker login --username "${DOCKER_USERNAME}" --password-stdin
+      -
+        name: Docker Buildx (push)
+        run: |
+          docker buildx build \
+            --cache-from "type=local,src=/tmp/.buildx-cache" \
+            --platform linux/amd64 \
+            --output "type=image,push=true" \
+            --tag bartixxx32/kissmpbase:latest \
+            --file ./Dockerfile .
+      -
+        name: Docker Check Manifest
+        run: |
+          docker run --rm mplatform/mquery crazymax/diun:latest
+      -
+        name: Clear
+        if: always()
+        run: |
+          rm -f ${HOME}/.docker/config.json
+
+  buildx-arm64:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v2
+      -
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      -
+        name: Docker Buildx (build)
+        run: |
+          docker buildx build \
+            --cache-from "type=local,src=/tmp/.buildx-cache" \
+            --cache-to "type=local,dest=/tmp/.buildx-cache" \
+            --platform linux/arm64 \
+            --output "type=image,push=false" \
+            --tag bartixxx32/kissmpbase:latest-arm64 \
+            --file ./Dockerfile .
+      -
+        name: Docker Login
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        run: |
+          echo "${DOCKER_PASSWORD}" | docker login --username "${DOCKER_USERNAME}" --password-stdin
+      -
+        name: Docker Buildx (push)
+        run: |
+          docker buildx build \
+            --cache-from "type=local,src=/tmp/.buildx-cache" \
+            --platform linux/arm64 \
+            --output "type=image,push=true" \
+            --tag bartixxx32/kissmpbase:latest-arm64 \
+            --file ./Dockerfile .
+      -
+        name: Docker Check Manifest
+        run: |
+          docker run --rm mplatform/mquery crazymax/diun:latest
+      -
+        name: Clear
+        if: always()
+        run: |
+          rm -f ${HOME}/.docker/config.json  
+
+  buildx-dev-amd64:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v2
+      -
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - 
+        name: Docker Buildx (build)
+        run: |
+          docker buildx build \
+            --cache-from "type=local,src=/tmp/.buildx-cache" \
+            --cache-to "type=local,dest=/tmp/.buildx-cache" \
+            --platform linux/amd64 \
+            --output "type=image,push=false" \
+            --tag bartixxx32/kissmpbase:dev \
+            --file ./Dockerfile-dev .
+      -
+        name: Docker Login
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        run: |
+          echo "${DOCKER_PASSWORD}" | docker login --username "${DOCKER_USERNAME}" --password-stdin
+      -
+        name: Docker Buildx (push)
+        run: |
+          docker buildx build \
+            --cache-from "type=local,src=/tmp/.buildx-cache" \
+            --platform linux/amd64 \
+            --output "type=image,push=true" \
+            --tag bartixxx32/kissmpbase:dev \
+            --file ./Dockerfile-dev .
+      -
+        name: Docker Check Manifest
+        run: |
+          docker run --rm mplatform/mquery crazymax/diun:latest
+      -
+        name: Trigger Gitlab Build
+        run: |
+          curl -X POST -F token=${{ secrets.GITLAB_TOKEN }} -F ref=main https://gitlab.com/api/v4/projects/25528852/trigger/pipeline
+      -
+        name: Clear
+        if: always()
+        run: |
+          rm -f ${HOME}/.docker/config.json
+
+  buildx-dev-arm64:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v2
+      -
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - 
+        name: Docker Buildx (build)
+        run: |
+          docker buildx build \
+            --cache-from "type=local,src=/tmp/.buildx-cache" \
+            --cache-to "type=local,dest=/tmp/.buildx-cache" \
+            --platform linux/arm64 \
+            --output "type=image,push=false" \
+            --tag bartixxx32/kissmpbase:dev-arm64 \
+            --file ./Dockerfile-dev .
+      -
+        name: Docker Login
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        run: |
+          echo "${DOCKER_PASSWORD}" | docker login --username "${DOCKER_USERNAME}" --password-stdin
+      -
+        name: Docker Buildx (push)
+        run: |
+          docker buildx build \
+            --cache-from "type=local,src=/tmp/.buildx-cache" \
+            --platform linux/arm64 \
+            --output "type=image,push=true" \
+            --tag bartixxx32/kissmpbase:dev-arm64 \
+            --file ./Dockerfile-dev .
+      -
+        name: Docker Check Manifest
+        run: |
+          docker run --rm mplatform/mquery crazymax/diun:latest
+      -
+        name: Clear
+        if: always()
+        run: |
+          rm -f ${HOME}/.docker/config.json
