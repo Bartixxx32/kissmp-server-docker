@@ -4,6 +4,8 @@
 
 [KissMP Website](https://kissmp.online)
 
+[KissMP GitHub](https://github.com/TheHellBox/KISS-multiplayer)
+
 We reccommend to run `docker-compose.yml` than `docker run` to have better control on your server
 
 
