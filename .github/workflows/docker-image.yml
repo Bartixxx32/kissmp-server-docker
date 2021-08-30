@@ -110,28 +110,3 @@ jobs:
         run: |
           rm -f ${HOME}/.docker/config.json
 
-      -
-        name: Docker Login
-        env:
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-        run: |
-          echo "${DOCKER_PASSWORD}" | docker login --username "${DOCKER_USERNAME}" --password-stdin
-      -
-        name: Docker Buildx (push)
-        run: |
-          docker buildx build \
-            --cache-from "type=local,src=/tmp/.buildx-cache" \
-            --platform linux/arm64 \
-            --output "type=image,push=true" \
-            --tag bartixxx32/kissmpbase:dev-arm64 \
-            --file ./Dockerfile-dev .
-      -
-        name: Docker Check Manifest
-        run: |
-          docker run --rm mplatform/mquery crazymax/diun:latest
-      -
-        name: Clear
-        if: always()
-        run: |
-          rm -f ${HOME}/.docker/config.json
