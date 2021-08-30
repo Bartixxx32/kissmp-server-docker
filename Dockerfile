@@ -1,4 +1,4 @@
-FROM alpine:3.11
+FROM rust:alpine3.11
 
 ARG COMMIT=aab6eda6310c671a6f1001a8b4092530cc129e39
 
@@ -7,7 +7,6 @@ ENV PATH=/root/.cargo/bin:$PATH
 WORKDIR /build
 RUN apk update
 RUN apk add git curl alpine-sdk binutils upx
-RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
 RUN git clone https://github.com/TheHellBox/KISS-multiplayer.git
 WORKDIR KISS-multiplayer
 RUN git checkout $COMMIT
