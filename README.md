@@ -31,7 +31,7 @@ To gain your own config.json, we recommend to start the server binary on your sy
 
  1. Make sure you have `docker` and `docker-compose` installed on your system!
  2. Put `config.json` and `docker-compose.yml` into your server directory
- 3. If you want add mods or addons create folders in same dorectory as `step 2` name it `mods` or/and `addons`
+ 3. If you want add mods or addons create folders in same directory as `step 2` name it `mods` or/and `addons`
  4. Edit `config.json` and `docker-compose.yml` to your preffer
  5. Start server by using `docker-compose up -d`
  6. Try to join and review if everything is working!
