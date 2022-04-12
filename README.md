@@ -1,5 +1,3 @@
-
-
 # KissMP Beam.NG Multiplayer Server Dockerized
 
 [KissMP Website](https://kissmp.online)
