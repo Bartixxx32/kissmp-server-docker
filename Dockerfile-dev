@@ -10,7 +10,6 @@ WORKDIR KISS-multiplayer
 WORKDIR /build/KISS-multiplayer/kissmp-server/
 RUN cargo build -j $(( $(nproc) + 1 )) --release
 RUN strip /build/KISS-multiplayer/target/release/kissmp-server
-RUN upx --best --lzma /build/KISS-multiplayer/target/release/kissmp-server
 
 FROM alpine:3.11
 RUN apk add upx
