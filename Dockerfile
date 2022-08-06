@@ -1,6 +1,6 @@
 FROM rust:alpine
 
-ARG COMMIT=c6fd9be2863d60d363491e359be0c81868217bb6
+ARG COMMIT=07ac644d3b89ecce61718180c36d4db896d0be39
 
 ENV PATH=/root/.cargo/bin:$PATH
 
