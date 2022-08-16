@@ -12,12 +12,9 @@ WORKDIR KISS-multiplayer
 RUN git checkout $COMMIT
 WORKDIR /build/KISS-multiplayer/kissmp-server/
 RUN cargo build -j $(( $(nproc) + 1 )) --release
-RUN strip /build/KISS-multiplayer/target/release/kissmp-server
 
 FROM alpine:3.11
-RUN apk add upx
 COPY --from=0 /build/KISS-multiplayer/target/release/kissmp-server /server/kissmp-server
-RUN upx --best --lzma /server/kissmp-server
 WORKDIR /server
 RUN mkdir mods
 RUN mkdir addons
